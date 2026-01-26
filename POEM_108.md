@@ -23,9 +23,9 @@ On the other hand, creating a `Driver` is a non-trivial task, making it difficul
 1. solve existing OpenMDAO models with new optimizers that don't have an associated `Driver`,
 2. integrate an OpenMDAO model in a different framework in a clean way.
 
-This POEM will describe a simple "functional[^function caveat]" interface to an OpenMDAO `Problem` that will hopefully solve these... problems.
+This POEM will describe a simple "functional[^function]" interface to an OpenMDAO `Problem` that will hopefully solve these... problems.
 
-[^function caveat]: Likely not functional in the mathematical sense.
+[^function]: Likely not functional in the mathematical sense.
 
 ## Description
 We want something like this:
