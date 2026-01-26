@@ -135,4 +135,5 @@ That way, github's built in notification system to get emails when things are ch
 | [105](POEM_105.md) | Add a "validate" Method to Linear Systems | [Rob Hetterich](https://github.com/rob-hetterich) | integrated |
 | [106](POEM_106.md) | Expose JAX vectorization to users | [Michael T. Fang](https://github.com/mtfang) | rejected |
 | [107](POEM_107.md) | Allow Input-Input Connections (Syntactic Sugar) | [Rob Falck](https://github.com/robfalck) | active |
+| [108](POEM_108.md) | Functional interface for driver-level callbacks | [Daniel Ingraham](https://github.com/dingraha) | active |
 
