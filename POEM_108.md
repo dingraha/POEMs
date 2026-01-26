@@ -25,7 +25,7 @@ On the other hand, creating a `Driver` is a non-trivial task, making it difficul
 
 This POEM will describe a simple "functional[^function]" interface to an OpenMDAO `Problem` that will hopefully solve these... problems.
 
-[^function]: Likely not functional in the mathematical sense.
+[^function]: Likely not a function in the mathematical sense.
 
 ## Description
 We want something like this:
@@ -44,17 +44,18 @@ dgdx = get_constraint_jacobian_callback(prob)
 consraints_x = dgdx(x)
 ```
 
-* Questions
-  * How do we properly handle the non-design variable inputs?
-    Those can of course change during the life of a `Problem`.
-  * What about options?
-    Can those change during a `Problem`?
-  * What type should the inputs and outputs be?
-    Vectors, dicts, some type of hybrid?
-    Maybe whatever an OpenMDAO `Vector` is?
-    Or should we cook up a subclass of `numpy.ndarray`?
-  * Should whatever code we come up with for need to interact with `Problem`, or just `Problem.model`?
-    I think it needs to know about design variables and objectives and constraints, and those appear to be defined on `Problem.model`.
-    On the other hand `Problem.run_model`, `Problem.compute_totals` and `Problem.compute_jacvec_product` exist on the `Problem` level.
-  * Do we need to worry about PETSC vectors or MPI?
-    Are the design variables, objectives or constraints ever distributed among MPI ranks is the critical question?
+### Questions
+* How do we properly handle the non-design variable inputs?
+  Those can of course change during the life of a `Problem`.
+* What about options?
+  Can those change?
+  Should they be able to?
+* What type should the inputs and outputs be?
+  Vectors, dicts, some type of hybrid?
+  Maybe whatever an OpenMDAO `Vector` is?
+  Or should we cook up a subclass of `numpy.ndarray`—might be the most convenient for the user.
+* Should whatever code we come up with for need to interact with `Problem`, or just `Problem.model`?
+  I think it needs to know about design variables and objectives and constraints, and those appear to be defined on `Problem.model`.
+  On the other hand `Problem.run_model`, `Problem.compute_totals` and `Problem.compute_jacvec_product` exist on the `Problem` level.
+* Do we need to worry about PETSC vectors or MPI?
+  Are the design variables, objectives or constraints ever distributed among MPI ranks is the critical question?
