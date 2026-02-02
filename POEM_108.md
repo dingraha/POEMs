@@ -33,12 +33,60 @@ We want something like this:
 ```python
 prob = om.Problem()
 # Do the usual stuff to define the Problem.
+
+# Decide which input and output variables we're interested in.
+# (Not specifying `input_vars` defaults to all design variables.
+# Not specifying `output_vars` defaults to the objective and all constraints.)
 input_vars = ["x1", "x2", "x3"]
 output_vars = ["y1", "y2"]
-x0, y0, f = prob.get_callback(form="f", input_vars=input_vars, output_vars=output_vars)
-x0, dydx0, dfdx = prob.get_callback(form="dfdx", input_vars=input_vars, output_vars=output_vars)
-x0, y0, dydx0, fdfdx = prob.get_callback(form="fdfdx", input_vars=input_vars, output_vars=output_vars)
+# Create the callable object that will compute outputs wrt inputs.
+f = prob.get_callback(form="f", input_vars=input_vars, output_vars=output_vars)
+
+# Create a new `numpy.ndarray` that's the correct length to use with `f`, and is initialized with the current values in `prob`.
+x = f.create_input_vector()
+
+# Set `x` as required.
+
+# From inputs `x` get outputs.
+y = f(x)
+
+# Can also set outputs in-place, to reuse memory.
+y2 = f.create_output_vector()
+f(x, y=y2)
+
+# Get a callback function that calculates the total derivatives.
+dfdx = prob.get_callback(form="dfdx")
+x = dfdx.create_input_vector()
+J = dfdx(x)
+
+# Can also set Jacobian in-place, to reuse memory.
+J2 = dfdx.create_jacobian()
+dfdx(x, J=J2)
+
+# Create combined callback function that will return both outputs and Jacobian.
+fdfdx = prob.get_callback(form="fdfdx", input_vars=input_vars, output_vars=output_vars)
+x = fdfdx.create_input_vector()
+y, J = fdfdx(x)
+
+# Again, can set things in-place.
+y3 = f.create_output_vector()
+J3 = fdfdx.create_jacobian()
+fdfdx(x, y=y3, J=J3)
 ```
+
+### TODOs
+* Add units support
+  * Easy for input and output vectors, since we can just use `Problem.get_val` and `Problem.set_val` with the `units` argument.
+  * ATM would need to manually scale the Jacobian we get from `Problem.compute_totals`.
+* Add `driver_scaling` support
+  * This should conflict with including units.
+* Check that I'm handling indices properly.
+  * `flat_indices = False` case
+  * `flat_indices = True` case
+* Determine how to deal with sparse Jacobians
+* Check if constraints are being handled properly (violation vs raw value).
+* Provide a way for users to get back part of the input or output vectors?
+  Might be tricky when using indices.
 
 ### Questions
 * How do we properly handle the non-design variable inputs?
@@ -65,3 +113,17 @@ x0, y0, dydx0, fdfdx = prob.get_callback(form="fdfdx", input_vars=input_vars, ou
       But nearly all optimizers require everything to be on one MPI rank (exception is `ParOpt`).
 * Do we want to support the matrix-free stuff, aka `compute_jacvec_product`?
   Shouldn't be that hard...
+* Didn't think about `indices`.
+  Might need to support that too.
+* What about constraint values?
+  A user might not care about the constraint value themselves, but instead want them in terms of a violation aka `g = y - y_target`.
+* What about scaling?
+  I think developers of a new optimization algorithm would want scaled values.
+  Should be an option.
+* How should I properly check if the variables exist, etc.?
+  `getval` should just throw an error I guess.
+* What should I do about sparse Jacobians?
+  Need to understand what `compute_totals` gives me then.
+* What to do about `flat_indices`?
+  Need to develop a test.
+
