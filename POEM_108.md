@@ -77,6 +77,7 @@ fdfdx(x, y=y3, J=J3)
 ### TODOs
 * Finish "first try" at functional interface
   * ignore units
+  * ignore scaling
   * do indices myself in the functional interface class
   * write tests, duh
   * Advice from Bret: make sure to cache the `_TotalJacInfo` object in the functional interface wrapper class (expensive to create).
@@ -103,6 +104,7 @@ fdfdx(x, y=y3, J=J3)
 * How to properly handle indices?
   If we ask for derivatives wrt design variables, objectives, constraints, `compute_totals` will use the indices given for the `add_design_var`, `add_constraint`, `add_objective`.
   But if we ask for derivatives wrt other stuff we always get the "whole thing," and there doesn't appear to be a way for the user to specify that with `compute_totals`.
+  This appears to be a limitation of `compute_totals` that we'd need to fix.
 * What I wish `compute_totals` could do:
   * Allow users to specify units for the `compute_totals` derivatives.
     Use an interface similar to `ExecComp`, aka `kwargs` mapping a variable name to a `dict` with `'units'`.
