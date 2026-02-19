@@ -75,18 +75,43 @@ fdfdx(x, y=y3, J=J3)
 ```
 
 ### TODOs
+* Finish "first try" at functional interface
+  * ignore units
+  * do indices myself in the functional interface class
+  * write tests, duh
+  * Advice from Bret: make sure to cache the `_TotalJacInfo` object in the functional interface wrapper class (expensive to create).
+  * Determine how to deal with sparse Jacobians
+  * Check if constraints are being handled properly (violation vs raw value).
+* Check that I'm handling indices properly.
+  * `flat_indices = False` case
+  * `flat_indices = True` case
 * Add units support
   * Easy for input and output vectors, since we can just use `Problem.get_val` and `Problem.set_val` with the `units` argument.
   * ATM would need to manually scale the Jacobian we get from `Problem.compute_totals`.
 * Add `driver_scaling` support
   * This should conflict with including units.
-* Check that I'm handling indices properly.
-  * `flat_indices = False` case
-  * `flat_indices = True` case
-* Determine how to deal with sparse Jacobians
-* Check if constraints are being handled properly (violation vs raw value).
 * Provide a way for users to get back part of the input or output vectors?
   Might be tricky when using indices.
+
+#### `Problem.compute_totals` wishlist/concerns/questions
+* How should constraint values be expressed?
+  A user might not care about the constraint value themselves, but instead want them in terms of a violation aka `g = y - y_target`.
+  Should that be an option?
+* What about linear constraints?
+  `Problem.compute_totals` appears to not return derivatives of those constraints by default.
+  Maybe that's OK?
+* How to properly handle indices?
+  If we ask for derivatives wrt design variables, objectives, constraints, `compute_totals` will use the indices given for the `add_design_var`, `add_constraint`, `add_objective`.
+  But if we ask for derivatives wrt other stuff we always get the "whole thing," and there doesn't appear to be a way for the user to specify that with `compute_totals`.
+* What I wish `compute_totals` could do:
+  * Allow users to specify units for the `compute_totals` derivatives.
+    Use an interface similar to `ExecComp`, aka `kwargs` mapping a variable name to a `dict` with `'units'`.
+    In the meantime I can do the units conversion myself inside the functional interface class.
+  * Allow users to specify indices for the `compute_totals` derivatives.
+    Use an interface similar to `ExecComp`, aka `kwargs` mapping a variable name to a `dict` with `'indices'`.
+    In the meantime I can keep track of indices inside the functional interface class.
+  * Users can already ask for scaled derivatives via the `driver_scaling` argument.
+    This should conflict with any `'units'` entries in the variables.
 
 ### Questions
 * How do we properly handle the non-design variable inputs?
@@ -121,9 +146,8 @@ fdfdx(x, y=y3, J=J3)
   I think developers of a new optimization algorithm would want scaled values.
   Should be an option.
 * How should I properly check if the variables exist, etc.?
-  `getval` should just throw an error I guess.
+  `getval`/`setval` should just throw an error I guess.
 * What should I do about sparse Jacobians?
   Need to understand what `compute_totals` gives me then.
 * What to do about `flat_indices`?
   Need to develop a test.
-
