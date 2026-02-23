@@ -60,7 +60,7 @@ x = dfdx.create_input_vector()
 J = dfdx(x)
 
 # Can also set Jacobian in-place, to reuse memory.
-J2 = dfdx.create_jacobian()
+J2 = dfdx.create_jacobian_matrix()
 dfdx(x, J=J2)
 
 # Create combined callback function that will return both outputs and Jacobian.
@@ -70,28 +70,29 @@ y, J = fdfdx(x)
 
 # Again, can set things in-place.
 y3 = f.create_output_vector()
-J3 = fdfdx.create_jacobian()
+J3 = fdfdx.create_jacobian_matrix()
 fdfdx(x, y=y3, J=J3)
 ```
 
 ### TODOs
-* Finish "first try" at functional interface
-  * ignore units
-  * ignore scaling
-  * do indices myself in the functional interface class
-  * write tests, duh
-  * Advice from Bret: make sure to cache the `_TotalJacInfo` object in the functional interface wrapper class (expensive to create).
-  * Determine how to deal with sparse Jacobians
-  * Check if constraints are being handled properly (violation vs raw value).
-* Check that I'm handling indices properly.
-  * `flat_indices = False` case
-  * `flat_indices = True` case
+* [ ] Finish "first try" at functional interface
+  * [x] ignore units
+  * [x] ignore scaling
+  * [x] do indices myself in the functional interface class
+  * [ ] write tests, duh
+  * [x] Advice from Bret: make sure to cache the `_TotalJacInfo` object in the functional interface wrapper class (expensive to create).
+  * [ ] Determine how to deal with sparse Jacobians
+  * [ ] Check if constraints are being handled properly (violation vs raw value).
+  * [ ] Check that I'm handling indices properly.
+    * [ ] `flat_indices = False` case
+    * [ ] `flat_indices = True` case
+    * [ ] Check behavior of design variables/objectives/constraints with user-declared indices (e.g passing an `indices` or `flat_indices` argument to `Problem.add_design_var`).
 * Add units support
-  * Easy for input and output vectors, since we can just use `Problem.get_val` and `Problem.set_val` with the `units` argument.
-  * ATM would need to manually scale the Jacobian we get from `Problem.compute_totals`.
+  * [ ] Easy for input and output vectors, since we can just use `Problem.get_val` and `Problem.set_val` with the `units` argument.
+  * [ ] ATM would need to manually scale the Jacobian we get from `Problem.compute_totals`.
 * Add `driver_scaling` support
-  * This should conflict with including units.
-* Provide a way for users to get back part of the input or output vectors?
+  * This should conflict with including units, I think.
+* [ ] Provide a way for users to get back part of the input or output vectors?
   Might be tricky when using indices.
 
 #### `Problem.compute_totals` wishlist/concerns/questions
@@ -104,7 +105,6 @@ fdfdx(x, y=y3, J=J3)
 * How to properly handle indices?
   If we ask for derivatives wrt design variables, objectives, constraints, `compute_totals` will use the indices given for the `add_design_var`, `add_constraint`, `add_objective`.
   But if we ask for derivatives wrt other stuff we always get the "whole thing," and there doesn't appear to be a way for the user to specify that with `compute_totals`.
-  This appears to be a limitation of `compute_totals` that we'd need to fix.
 * What I wish `compute_totals` could do:
   * Allow users to specify units for the `compute_totals` derivatives.
     Use an interface similar to `ExecComp`, aka `kwargs` mapping a variable name to a `dict` with `'units'`.
