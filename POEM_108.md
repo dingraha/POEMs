@@ -81,7 +81,8 @@ fdfdx(x, y=y3, J=J3)
   * [x] do indices myself in the functional interface class
   * [ ] write tests, duh
   * [x] Advice from Bret: make sure to cache the `_TotalJacInfo` object in the functional interface wrapper class (expensive to create).
-  * [ ] Determine how to deal with sparse Jacobians
+  * [x] Determine how to deal with sparse Jacobians
+    * Claude and I think that `Problem.compute_totals` will always return plain old `numpy.ndarray`s, so ignoring that for now.
   * [ ] Check if constraints are being handled properly (violation vs raw value).
   * [ ] Check that I'm handling indices properly.
     * [ ] `flat_indices = False` case
