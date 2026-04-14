@@ -92,6 +92,7 @@ fdfdx(x, y=y3, J=J3)
           * which variables they want
           * the indices for each variable
         But I need to make sure that things don't conflict: what if a user sets indices for e.g. a design variable, then wants different indices for the functional interface?
+* [ ] Add a warning when a user specifies units explaining that it's not fully supported.
 * [x] Provide a way for users to get back part of the input or output vectors?
   * Done via `_FunctionalCallback.get_input_val(var_name)` and `_FunctionalCallback.get_output_val(var_name)`
 
