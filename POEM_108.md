@@ -84,9 +84,6 @@ fdfdx(x, y=y3, J=J3)
   * [x] Advice from Bret: make sure to cache the `_TotalJacInfo` object in the functional interface wrapper class (expensive to create).
   * [x] Ignore the possibility of sparse total Jacobians
     * Claude and I think that `Problem.compute_totals` will always return plain old `numpy.ndarray`s, so ignoring that for now.
-  * [ ] Check if constraints are being handled properly (violation vs raw value).
-    Maybe I should provide a way for the user to specify what they'd prefer?
-    Maybe `driver_scaling` should mean the user wants a violation, otherwise raw value.
   * [ ] Check that I'm handling indices properly.
     * [ ] `flat_indices = False` case
     * [ ] `flat_indices = True` case
@@ -104,6 +101,9 @@ fdfdx(x, y=y3, J=J3)
     * [ ] ATM would need to manually scale the Jacobian we get from `Problem.compute_totals`.
     * [ ] Best way to do that would be to add units support to `_TotalJacInfo`.
     * [ ] Should add a warning when a user specifies units explaining that it's not fully supported.
+  * [ ] Allow constraints to be expressed as a violation (instead of raw value).
+    Maybe I should provide a way for the user to specify what they'd prefer?
+    Maybe `driver_scaling` should mean the user wants a violation, otherwise raw value.
   * [ ] Add `driver_scaling` support
     * This should conflict with including units, I think.
   * [ ] Determine how to best deal with sparse total Jacobians
